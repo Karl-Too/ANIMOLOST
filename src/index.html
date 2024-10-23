@@ -1,17 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1"> <!-- Increased scale for bigger interface -->
+    <title>Animo Lost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 18px; /* Slightly larger text for better readability */
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        .header {
+            background-color: #014421; /* Dark green */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .sidebar {
+            background-color: #014421; /* Dark green */
+            color: white;
+            padding: 20px;
+            width: 300px;
+            height: 100vh;
+            position: fixed;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .sidebar.dark-mode {
+            background-color: #111;
+        }
+        .button {
+            background-color: white;
+            color: #014421;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 18px; /* Larger text for better visibility */
+        }
+        .button:hover {
+            background-color: #f9f9f9;
+            transform: scale(1.02);
+        }
+        .button.dark-mode {
+            background-color: #333;
+            color: white;
+        }
+        .button.dark-mode:hover {
+            background-color: #444;
+        }
+        .content {
+            margin-left: 320px;
+            padding: 20px;
+        }
+        .form-container, .home-content, .find-content, .forum-content {
+            display: none;
+        }
+        input[type="text"], input[type="submit"], input[type="file"], input[type="search"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 2px solid #014421; /* Changed to green */
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 16px; /* Slightly larger font size for input fields */
+        }
+        input[type="text"], input[type="search"] {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        input[type="text"].dark-mode, input[type="search"].dark-mode {
+            background-color: #555;
+            color: white;
+        }
+        input[type="submit"] {
+            background-color: white;
+            color: #014421;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        input[type="submit"].dark-mode {
+            background-color: #555;
+            color: white;
+        }
+        input[type="submit"]:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #014421;
+            color: white;
+        }
+        th.dark-mode, td.dark-mode {
+            background-color: #555;
+            color: white;
+        }
+    </style>
 </head>
-
 <body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
-</body>
 
+<div class="header" id="header">
+    <h1>ANIMO LOST</h1>
+    <button class="toggle-theme" onclick="toggleTheme()">🌙</button>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <button class="button" onclick="showHome()"><i class="fas fa-home fa-lg"></i> Dashboard</button>
+    <button class="button" onclick="showForm()"><i class="fas fa-plus fa-lg"></i> Add Entry</button>
+    <button class="button" onclick="showFind()"><i class="fas fa-search fa-lg"></i> Find</button>
+    <button class="button" onclick="showForum()"><i class="fas fa-users fa-lg"></i> Forum</button>
+</div>
+
+<div class="content">
+    <div class="home-content" id="homeContent">
+        <h2>Welcome to Animo Lost</h2>
+        <p>This is the official page for lost and found items. Below you can see a list of reported lost items and associated images.</p>
+        <h3>Recent Lost Items</h3>
+        <table id="recentItemsTable">
+            <thead>
+                <tr>
+                    <th>Item Lost</th>
+                    <th>Reported By</th>
+                    <th>Time Logged</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Black Wallet</td>
+                    <td>John Doe</td>
+                    <td>2024-09-24 10:30 AM</td>
+                </tr>
+                <tr>
+                    <td>Red Backpack</td>
+                    <td>Jane Smith</td>
+                    <td>2024-09-23 02:15 PM</td>
+                </tr>
+                <tr>
+                    <td>Silver Watch</td>
+                    <td>Alex Johnson</td>
+                    <td>2024-09-22 04:45 PM</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="form-container" id="formContainer">
+        <h2>Add Entry</h2>
+        <form id="lostItemForm" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Basic Information</legend>
+                <label for="mainCategory">Main Category:</label>
+                <select id="mainCategory" onchange="updateSubCategory()" required>
+                    <option value="">Select Main Category</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="jewelry">Jewelry</option>
+                    <option value="clothing">Clothing</option>
+                </select>
+
+                <label for="subCategory">Sub Category:</label>
+                <select id="subCategory" required>
+                    <option value="">Select Sub Category</option>
+                </select>
+
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="section">Section:</label>
+                <input type="text" id="section" name="section" required>
+            </fieldset>
+
+            <fieldset>
+                <legend>Attachment</legend>
+                <label for="fileInput">Upload Image:</label>
+                <input type="file" id="fileInput" name="fileInput" accept="image/*">
+            </fieldset>
+
+            <fieldset>
+                <legend>Notes</legend>
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required>
+            </fieldset>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="find-content" id="findContent">
+        <h2>Find Lost Items</h2>
+        
+        <!-- Search Bar -->
+        <input type="search" id="searchBar" placeholder="Search for an item..." onkeyup="searchItems()">
+        <input type="submit" value="Search" onclick="searchItems()">
+
+        <table id="findItemsTable">
+            <thead>
+                <tr>
+                    <th>Item Lost</th>
+                    <th>Reported By</th>
+                    <th>Time Logged</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody id="findItemsTableBody">
+                <tr>
+                    <td>Black Wallet</td>
+                    <td>John Doe</td>
+                    <td>2024-09-24 10:30 AM</td>
+                    <td><img src="wallet.jpg" alt="Wallet Image" width="50"></td>
+                </tr>
+                <tr>
+                    <td>Red Backpack</td>
+                    <td>Jane Smith</td>
+                    <td>2024-09-23 02:15 PM</td>
+                    <td><img src="backpack.jpg" alt="Backpack Image" width="50"></td>
+                </tr>
+                <tr>
+                    <td>Silver Watch</td>
+                    <td>Alex Johnson</td>
+                    <td>2024-09-22 04:45 PM</td>
+                    <td><img src="watch.jpg" alt="Watch Image" width="50"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="forum-content" id="forumContent">
+        <h2>Community Forum</h2>
+        <p>Join the discussion and connect with others who have lost or found items.</p>
+    </div>
+</div>
+
+<script>
+    function showHome() {
+        document.getElementById('homeContent').style.display = 'block';
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('findContent').style.display = 'none';
+        document.getElementById('forumContent').style.display = 'none';
+    }
+
+    function showForm() {
+        document.getElementById('homeContent').style.display = 'none';
+        document.getElementById('formContainer').style.display = 'block';
+        document.getElementById('findContent').style.display = 'none';
+        document.getElementById('forumContent').style.display = 'none';
+    }
+
+    function showFind() {
+        document.getElementById('homeContent').style.display = 'none';
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('findContent').style.display = 'block';
+        document.getElementById('forumContent').style.display = 'none';
+    }
+
+    function showForum() {
+        document.getElementById('homeContent').style.display = 'none';
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('findContent').style.display = 'none';
+        document.getElementById('forumContent').style.display = 'block';
+    }
+
+    function updateSubCategory() {
+        const mainCategory = document.getElementById("mainCategory").value;
+        const subCategory = document.getElementById("subCategory");
+
+        subCategory.innerHTML = ""; // Clear previous options
+
+        if (mainCategory === "electronics") {
+            subCategory.innerHTML += '<option value="laptop">Laptop</option>';
+            subCategory.innerHTML += '<option value="phone">Phone</option>';
+            subCategory.innerHTML += '<option value="tablet">Tablet</option>';
+        } else if (mainCategory === "jewelry") {
+            subCategory.innerHTML += '<option value="necklace">Necklace</option>';
+            subCategory.innerHTML += '<option value="ring">Ring</option>';
+            subCategory.innerHTML += '<option value="bracelet">Bracelet</option>';
+        } else if (mainCategory === "clothing") {
+            subCategory.innerHTML += '<option value="jacket">Jacket</option>';
+            subCategory.innerHTML += '<option value="shirt">Shirt</option>';
+            subCategory.innerHTML += '<option value="pants">Pants</option>';
+        }
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const buttons = document.querySelectorAll('.button');
+        const inputs = document.querySelectorAll('input[type="text"], input[type="submit"], input[type="search"]');
+        const thElements = document.querySelectorAll('th');
+        const tdElements = document.querySelectorAll('td');
+
+        body.classList.toggle('dark-mode');
+
+        // Toggle class for buttons
+        buttons.forEach(button => {
+            button.classList.toggle('dark-mode');
+        });
+
+        // Toggle class for inputs
+        inputs.forEach(input => {
+            input.classList.toggle('dark-mode');
+        });
+
+        // Toggle class for table headers and cells
+        thElements.forEach(th => {
+            th.classList.toggle('dark-mode');
+        });
+        tdElements.forEach(td => {
+            td.classList.toggle('dark-mode');
+        });
+
+        // Toggle sidebar background
+        document.getElementById('sidebar').classList.toggle('dark-mode');
+    }
+
+    function searchItems() {
+        const searchValue = document.getElementById("searchBar").value.toLowerCase();
+        const tableRows = document.querySelectorAll("#findItemsTableBody tr");
+
+        tableRows.forEach(row => {
+            const itemName = row.querySelector("td:first-child").textContent.toLowerCase();
+            if (itemName.includes(searchValue)) {
+                row.style.display = ""; // Show the row
+            } else {
+                row.style.display = "none"; // Hide the row
+            }
+        });
+    }
+
+    // Show home content by default
+    showHome();
+</script>
+</body>
 </html>
