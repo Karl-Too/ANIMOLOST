@@ -77,7 +77,7 @@
         .form-container, .home-content, .find-content, .forum-content {
             display: none;
         }
-        input[type="text"], input[type="submit"], input[type="file"], input[type="search"] {
+        input[type="text"], input[type="submit"], input[type="file"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin-top: 10px;
@@ -86,11 +86,11 @@
             transition: background-color 0.3s, color 0.3s;
             font-size: 16px; /* Slightly larger font size for input fields */
         }
-        input[type="text"], input[type="search"] {
+        input[type="text"] {
             background-color: #f9f9f9;
             color: #333;
         }
-        input[type="text"].dark-mode, input[type="search"].dark-mode {
+        input[type="text"].dark-mode {
             background-color: #555;
             color: white;
         }
@@ -159,21 +159,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Black Wallet</td>
-                    <td>John Doe</td>
-                    <td>2024-09-24 10:30 AM</td>
-                </tr>
-                <tr>
-                    <td>Red Backpack</td>
-                    <td>Jane Smith</td>
-                    <td>2024-09-23 02:15 PM</td>
-                </tr>
-                <tr>
-                    <td>Silver Watch</td>
-                    <td>Alex Johnson</td>
-                    <td>2024-09-22 04:45 PM</td>
-                </tr>
+                <!-- No sample items here -->
             </tbody>
         </table>
     </div>
@@ -219,11 +205,6 @@
     </div>
     <div class="find-content" id="findContent">
         <h2>Find Lost Items</h2>
-        
-        <!-- Search Bar -->
-        <input type="search" id="searchBar" placeholder="Search for an item..." onkeyup="searchItems()">
-        <input type="submit" value="Search" onclick="searchItems()">
-
         <table id="findItemsTable">
             <thead>
                 <tr>
@@ -233,31 +214,14 @@
                     <th>Image</th>
                 </tr>
             </thead>
-            <tbody id="findItemsTableBody">
-                <tr>
-                    <td>Black Wallet</td>
-                    <td>John Doe</td>
-                    <td>2024-09-24 10:30 AM</td>
-                    <td><img src="wallet.jpg" alt="Wallet Image" width="50"></td>
-                </tr>
-                <tr>
-                    <td>Red Backpack</td>
-                    <td>Jane Smith</td>
-                    <td>2024-09-23 02:15 PM</td>
-                    <td><img src="backpack.jpg" alt="Backpack Image" width="50"></td>
-                </tr>
-                <tr>
-                    <td>Silver Watch</td>
-                    <td>Alex Johnson</td>
-                    <td>2024-09-22 04:45 PM</td>
-                    <td><img src="watch.jpg" alt="Watch Image" width="50"></td>
-                </tr>
+            <tbody>
+                <!-- Rows will be populated based on submitted entries -->
             </tbody>
         </table>
     </div>
     <div class="forum-content" id="forumContent">
-        <h2>Community Forum</h2>
-        <p>Join the discussion and connect with others who have lost or found items.</p>
+        <h2>Forum</h2>
+        <p>This section allows discussion regarding lost and found items.</p>
     </div>
 </div>
 
@@ -291,73 +255,52 @@
     }
 
     function updateSubCategory() {
-        const mainCategory = document.getElementById("mainCategory").value;
-        const subCategory = document.getElementById("subCategory");
+        var mainCategory = document.getElementById('mainCategory').value;
+        var subCategory = document.getElementById('subCategory');
+        subCategory.innerHTML = ''; // Clear previous options
 
-        subCategory.innerHTML = ""; // Clear previous options
-
-        if (mainCategory === "electronics") {
-            subCategory.innerHTML += '<option value="laptop">Laptop</option>';
-            subCategory.innerHTML += '<option value="phone">Phone</option>';
-            subCategory.innerHTML += '<option value="tablet">Tablet</option>';
-        } else if (mainCategory === "jewelry") {
-            subCategory.innerHTML += '<option value="necklace">Necklace</option>';
-            subCategory.innerHTML += '<option value="ring">Ring</option>';
-            subCategory.innerHTML += '<option value="bracelet">Bracelet</option>';
-        } else if (mainCategory === "clothing") {
-            subCategory.innerHTML += '<option value="jacket">Jacket</option>';
-            subCategory.innerHTML += '<option value="shirt">Shirt</option>';
-            subCategory.innerHTML += '<option value="pants">Pants</option>';
+        if (mainCategory === 'electronics') {
+            subCategory.innerHTML = `
+                <option value="phone">Phone</option>
+                <option value="laptop">Laptop</option>
+                <option value="tablet">Tablet</option>
+            `;
+        } else if (mainCategory === 'jewelry') {
+            subCategory.innerHTML = `
+                <option value="ring">Ring</option>
+                <option value="necklace">Necklace</option>
+            `;
+        } else if (mainCategory === 'clothing') {
+            subCategory.innerHTML = `
+                <option value="shirt">Shirt</option>
+                <option value="jacket">Jacket</option>
+            `;
         }
     }
 
     function toggleTheme() {
-        const body = document.body;
-        const buttons = document.querySelectorAll('.button');
-        const inputs = document.querySelectorAll('input[type="text"], input[type="submit"], input[type="search"]');
-        const thElements = document.querySelectorAll('th');
-        const tdElements = document.querySelectorAll('td');
-
-        body.classList.toggle('dark-mode');
-
-        // Toggle class for buttons
-        buttons.forEach(button => {
-            button.classList.toggle('dark-mode');
-        });
-
-        // Toggle class for inputs
-        inputs.forEach(input => {
-            input.classList.toggle('dark-mode');
-        });
-
-        // Toggle class for table headers and cells
-        thElements.forEach(th => {
-            th.classList.toggle('dark-mode');
-        });
-        tdElements.forEach(td => {
-            td.classList.toggle('dark-mode');
-        });
-
-        // Toggle sidebar background
+        document.body.classList.toggle('dark-mode');
         document.getElementById('sidebar').classList.toggle('dark-mode');
+        var header = document.getElementById('header');
+        header.classList.toggle('dark-mode');
+        var buttons = document.getElementsByClassName('button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.toggle('dark-mode');
+        }
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].classList.toggle('dark-mode');
+        }
+        var thElements = document.getElementsByTagName('th');
+        for (var i = 0; i < thElements.length; i++) {
+            thElements[i].classList.toggle('dark-mode');
+        }
+        var tdElements = document.getElementsByTagName('td');
+        for (var i = 0; i < tdElements.length; i++) {
+            tdElements[i].classList.toggle('dark-mode');
+        }
     }
-
-    function searchItems() {
-        const searchValue = document.getElementById("searchBar").value.toLowerCase();
-        const tableRows = document.querySelectorAll("#findItemsTableBody tr");
-
-        tableRows.forEach(row => {
-            const itemName = row.querySelector("td:first-child").textContent.toLowerCase();
-            if (itemName.includes(searchValue)) {
-                row.style.display = ""; // Show the row
-            } else {
-                row.style.display = "none"; // Hide the row
-            }
-        });
-    }
-
-    // Show home content by default
-    showHome();
 </script>
+
 </body>
 </html>
