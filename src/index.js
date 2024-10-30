@@ -1,35 +1,34 @@
-const { app } = require('@azure/functions');
+const sql = require('mssql');
 
-app.setup({
-    enableHttpStream: true
-});
+module.exports = async function (context, req) {
+    const { username, section, mainCategory, subCategory, description } = req.body;
 
-// Function to toggle between light and dark themes
-function toggleTheme() {
-    const body = document.body;
-    body.classList.toggle('dark-theme'); // Change this to your preferred class names
-}
-
-// Function to show the home content
-function showHome() {
-    document.getElementById('homeContent').style.display = 'block';
-    document.getElementById('formContainer').style.display = 'none';
-    document.getElementById('findContent').style.display = 'none';
-    document.getElementById('forumContent').style.display = 'none';
-}
-
-// Function to show the form content
-function showForm() {
-    document.getElementById('homeContent').style.display = 'none';
-    document.getElementById('formContainer').style.display = 'block';
-    document.getElementById('findContent').style.display = 'none';
-    document.getElementById('forumContent').style.display = 'none';
-}
-
-// Function to show the find content
-function showFind() {
-    document.getElementById('homeContent').style.display = 'none';
-    document.getElementById('formContainer').style.display = 'none';
-    document.getElementById('findContent').style.display = 'block';
-    document.getElementById('forumContent').style.display = 'none';
-}
+    try {
+        // Connect to the database
+        await sql.connect(process.env['SQL_CONNECTION_STRING']);
+        
+        // Insert entry into the database
+        await sql.query`
+            INSERT INTO [System Table] (Username, Section, MainCategory, SubCategory, Description)
+            VALUES (@username, @section, @mainCategory, @subCategory, @description)
+        `
+        .input('username', sql.VarChar, username)
+        .input('section', sql.VarChar, section)
+        .input('mainCategory', sql.VarChar, mainCategory)
+        .input('subCategory', sql.VarChar, subCategory)
+        .input('description', sql.VarChar, description);
+        
+        context.res = {
+            status: 200,
+            body: { message: "Entry saved successfully!" }
+        };
+    } catch (error) {
+        context.log.error('SQL error:', error);
+        context.res = {
+            status: 500,
+            body: { error: "An error occurred while saving the entry." }
+        };
+    } finally {
+        await sql.close(); // Ensure the database connection is closed
+    }
+};

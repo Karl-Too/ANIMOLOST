@@ -181,7 +181,7 @@
                     <option value="">Select Sub Category</option>
                 </select>
 
-                <label for="username">Username:</label>
+                <br><label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
 
                 <label for="section">Section:</label>
@@ -226,11 +226,54 @@
 </div>
 
 <script>
+    async function submitForm(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(document.getElementById('lostItemForm'));
+        
+        try {
+            const response = await fetch('<YOUR_AZURE_FUNCTION_URL>', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                alert('Entry saved successfully!');
+                document.getElementById('lostItemForm').reset(); // Clear the form
+                showHome(); // Optionally, go back to home or refresh the entries displayed
+            } else {
+                alert('Failed to save entry. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    }
+
+    async function fetchEntries() {
+        const response = await fetch('<YOUR_AZURE_FUNCTION_URL_FOR_FETCHING_ENTRIES>');
+        const entries = await response.json();
+
+        const tableBody = document.querySelector('#recentItemsTable tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        entries.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${entry.itemLost}</td>
+                <td>${entry.reportedBy}</td>
+                <td>${new Date(entry.timeLogged).toLocaleString()}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
     function showHome() {
         document.getElementById('homeContent').style.display = 'block';
         document.getElementById('formContainer').style.display = 'none';
         document.getElementById('findContent').style.display = 'none';
         document.getElementById('forumContent').style.display = 'none';
+        fetchEntries(); // Fetch and display entries
     }
 
     function showForm() {
@@ -301,6 +344,7 @@
         }
     }
 </script>
+
 
 </body>
 </html>
