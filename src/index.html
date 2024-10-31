@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.1"> <!-- Increased scale for bigger interface -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
     <title>Animo Lost</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -12,39 +12,62 @@
             background-color: #f4f4f4;
             color: #333;
             transition: background-color 0.3s, color 0.3s;
-            font-size: 18px; /* Slightly larger text for better readability */
+            font-size: 18px;
+            overflow: hidden; /* Prevent body scroll */
         }
         body.dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
+            background-color: #121212;
+            color: #ffffff;
         }
         .header {
             background-color: #014421; /* Dark green */
             color: white;
             padding: 20px;
             text-align: center;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .header h1 {
-            margin: 0;
+        body.dark-mode .header {
+            background-color: #1a2d1b; /* Darker green for dark mode */
         }
         .sidebar {
             background-color: #014421; /* Dark green */
             color: white;
             padding: 20px;
             width: 300px;
-            height: 100vh;
-            position: fixed;
+            height: 100vh; /* Full height */
+            position: fixed; /* Keep sidebar fixed */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
             box-shadow: 3px 0 10px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
             gap: 15px;
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            transition: transform 0.3s ease; /* Smooth transition */
+            transform: translateX(0); /* Start in view */
         }
-        .sidebar.dark-mode {
-            background-color: #111;
+        .sidebar.hidden {
+            transform: translateX(-100%); /* Move out of view */
+        }
+        body.dark-mode .sidebar {
+            background-color: #1a2d1b; /* Darker green for dark mode */
+        }
+        .sidebar .toggle-button {
+            background-color: #014421; /* Dark green */
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            position: relative;
+            border-radius: 5px;
+            font-size: 24px; /* Increase size for better visibility */
+            transition: background-color 0.3s;
+            margin-left: 10px; /* Space between buttons */
+        }
+        .sidebar .toggle-button:hover {
+            background-color: #1a2d1b; /* Darker green for hover */
         }
         .button {
             background-color: white;
@@ -57,27 +80,42 @@
             align-items: center;
             gap: 10px; /* Space between icon and text */
             transition: background-color 0.3s, transform 0.2s;
-            font-size: 18px; /* Larger text for better visibility */
+            font-size: 18px;
         }
         .button:hover {
             background-color: #f9f9f9;
             transform: scale(1.02);
         }
         .button.dark-mode {
-            background-color: #333;
+            background-color: #2b3d2a; /* Darker green for dark mode */
             color: white;
         }
         .button.dark-mode:hover {
-            background-color: #444;
+            background-color: #3c4e3b; /* Darker hover effect for dark mode */
         }
         .content {
-            margin-left: 320px;
+            margin-left: 320px; /* Adjust for sidebar width */
             padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 100vh; /* Make content take full height */
+            overflow-y: auto; /* Allow scrolling for content area */
+            transition: margin-left 0.3s ease; /* Smooth transition for content */
+        }
+        .content.shifted {
+            margin-left: 20px; /* Adjust margin when sidebar is hidden */
+        }
+        body.dark-mode .content {
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
         .form-container, .home-content, .find-content, .forum-content {
             display: none;
         }
-        input[type="text"], input[type="submit"], input[type="file"] {
+        input[type="text"], input[type="submit"], input[type="file"], textarea {
             width: calc(100% - 20px);
             padding: 10px;
             margin-top: 10px;
@@ -90,9 +128,10 @@
             background-color: #f9f9f9;
             color: #333;
         }
-        input[type="text"].dark-mode {
-            background-color: #555;
+        input[type="text"].dark-mode, textarea.dark-mode {
+            background-color: #3c4e3b; /* Darker background for input in dark mode */
             color: white;
+            border: 2px solid #5c8b5c; /* Lighter border in dark mode */
         }
         input[type="submit"] {
             background-color: white;
@@ -103,11 +142,15 @@
             border-radius: 5px;
         }
         input[type="submit"].dark-mode {
-            background-color: #555;
+            background-color: #2b3d2a; /* Darker green for dark mode */
             color: white;
         }
         input[type="submit"]:hover {
             opacity: 0.9;
+        }
+        textarea {
+            resize: none; /* Disable resizing */
+            height: 100px; /* Fixed height */
         }
         table {
             width: 100%;
@@ -126,8 +169,21 @@
             color: white;
         }
         th.dark-mode, td.dark-mode {
-            background-color: #555;
+            background-color: #2b3d2a; /* Darker green for header in dark mode */
             color: white;
+        }
+        .see-more {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #014421; /* Dark green */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .see-more:hover {
+            background-color: #1a2d1b; /* Darker green for hover */
         }
     </style>
 </head>
@@ -135,7 +191,10 @@
 
 <div class="header" id="header">
     <h1>ANIMO LOST</h1>
-    <button class="toggle-theme" onclick="toggleTheme()">🌙</button>
+    <div>
+        <button class="toggle-theme" onclick="toggleTheme()">🌙</button>
+        <button class="toggle-button" onclick="toggleSidebar()">◀</button> <!-- Sidebar toggle button -->
+    </div>
 </div>
 
 <div class="sidebar" id="sidebar">
@@ -145,7 +204,7 @@
     <button class="button" onclick="showForum()"><i class="fas fa-users fa-lg"></i> Forum</button>
 </div>
 
-<div class="content">
+<div class="content" id="content">
     <div class="home-content" id="homeContent">
         <h2>Welcome to Animo Lost</h2>
         <p>This is the official page for lost and found items. Below you can see a list of reported lost items and associated images.</p>
@@ -159,192 +218,208 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- No sample items here -->
+                <tr>
+                    <td>Blue Backpack</td>
+                    <td>John Doe</td>
+                    <td>2024-10-29 12:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Smartphone</td>
+                    <td>Jane Smith</td>
+                    <td>2024-10-30 1:30 PM</td>
+                </tr>
+                <tr>
+                    <td>Black Wallet</td>
+                    <td>Michael Johnson</td>
+                    <td>2024-10-28 11:45 AM</td>
+                </tr>
             </tbody>
         </table>
+        <button class="see-more" onclick="showMore()">See More</button>
     </div>
+
     <div class="form-container" id="formContainer">
-        <h2>Add Entry</h2>
-        <form id="lostItemForm" enctype="multipart/form-data">
+        <h2>Report a Lost Item</h2>
+        <form id="lostItemForm" onsubmit="submitForm(event)">
             <fieldset>
-                <legend>Basic Information</legend>
-                <label for="mainCategory">Main Category:</label>
-                <select id="mainCategory" onchange="updateSubCategory()" required>
-                    <option value="">Select Main Category</option>
+                <legend>Lost Item Details</legend>
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required>
+                
+                <br><label for="mainCategory">Main Category:</label>
+                <select id="mainCategory" name="mainCategory" onchange="updateSubCategory()">
                     <option value="electronics">Electronics</option>
                     <option value="jewelry">Jewelry</option>
                     <option value="clothing">Clothing</option>
+                    <option value="school supplies">School Supplies</option>
                 </select>
 
                 <label for="subCategory">Sub Category:</label>
-                <select id="subCategory" required>
-                    <option value="">Select Sub Category</option>
+                <select id="subCategory" name="subCategory" required>
+                    <option value="">Select...</option>
+                    <option value="phone">Phone</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="necklace">Necklace</option>
+                    <option value="ring">Ring</option>
+                    <option value="shirt">Shirt</option>
+                    <option value="pants">Pants</option>
+                    <option value="jacket">Jacket</option>
+                    <option value="ballpen">Ballpen</option>
+                    <option value="correction tape">Correction Tape</option>
+                    <option value="calculator">Calculator</option>
                 </select>
 
-                <br><label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <br><label for="reporterName">Reported By:</label><br> 
+                <input type="text" id="reporterName" name="reporterName" required>
 
                 <label for="section">Section:</label>
-                <input type="text" id="section" name="section" required>
-            </fieldset>
+                <input type="text" id="section" name="section">
 
-            <fieldset>
-                <legend>Attachment</legend>
                 <label for="fileInput">Upload Image:</label>
-                <input type="file" id="fileInput" name="fileInput" accept="image/*">
-            </fieldset>
+                <input type="file" id="fileInput" name="fileInput" accept="image/*" required>
 
-            <fieldset>
-                <legend>Notes</legend>
                 <label for="description">Description:</label>
-                <input type="text" id="description" name="description" required>
+                <textarea id="description" name="description" required placeholder="Provide a detailed description of the item..."></textarea>
             </fieldset>
 
             <input type="submit" value="Submit">
         </form>
     </div>
+    
     <div class="find-content" id="findContent">
         <h2>Find Lost Items</h2>
-        <table id="findItemsTable">
-            <thead>
-                <tr>
-                    <th>Item Lost</th>
-                    <th>Reported By</th>
-                    <th>Time Logged</th>
-                    <th>Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Rows will be populated based on submitted entries -->
-            </tbody>
-        </table>
+        <p>Search for items that have been reported lost.</p>
+        <!-- Add search functionality here -->
     </div>
+
     <div class="forum-content" id="forumContent">
         <h2>Forum</h2>
-        <p>This section allows discussion regarding lost and found items.</p>
+        <p>Discuss and share about lost and found items.</p>
+        <!-- Add forum functionality here -->
     </div>
 </div>
 
 <script>
-    async function submitForm(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const formData = new FormData(document.getElementById('lostItemForm'));
-        
-        try {
-            const response = await fetch('<YOUR_AZURE_FUNCTION_URL>', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                alert('Entry saved successfully!');
-                document.getElementById('lostItemForm').reset(); // Clear the form
-                showHome(); // Optionally, go back to home or refresh the entries displayed
-            } else {
-                alert('Failed to save entry. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        }
-    }
-
-    async function fetchEntries() {
-        const response = await fetch('<YOUR_AZURE_FUNCTION_URL_FOR_FETCHING_ENTRIES>');
-        const entries = await response.json();
-
-        const tableBody = document.querySelector('#recentItemsTable tbody');
-        tableBody.innerHTML = ''; // Clear existing rows
-
-        entries.forEach(entry => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${entry.itemLost}</td>
-                <td>${entry.reportedBy}</td>
-                <td>${new Date(entry.timeLogged).toLocaleString()}</td>
-            `;
-            tableBody.appendChild(row);
+async function submitForm(event) {
+    event.preventDefault(); // Prevent form from submitting normally
+    const formData = new FormData(document.getElementById('lostItemForm'));
+    try {
+        const response = await fetch('<YOUR_AZURE_FUNCTION_URL>', {
+            method: 'POST',
+            body: formData,
         });
-    }
-
-    function showHome() {
-        document.getElementById('homeContent').style.display = 'block';
-        document.getElementById('formContainer').style.display = 'none';
-        document.getElementById('findContent').style.display = 'none';
-        document.getElementById('forumContent').style.display = 'none';
-        fetchEntries(); // Fetch and display entries
-    }
-
-    function showForm() {
-        document.getElementById('homeContent').style.display = 'none';
-        document.getElementById('formContainer').style.display = 'block';
-        document.getElementById('findContent').style.display = 'none';
-        document.getElementById('forumContent').style.display = 'none';
-    }
-
-    function showFind() {
-        document.getElementById('homeContent').style.display = 'none';
-        document.getElementById('formContainer').style.display = 'none';
-        document.getElementById('findContent').style.display = 'block';
-        document.getElementById('forumContent').style.display = 'none';
-    }
-
-    function showForum() {
-        document.getElementById('homeContent').style.display = 'none';
-        document.getElementById('formContainer').style.display = 'none';
-        document.getElementById('findContent').style.display = 'none';
-        document.getElementById('forumContent').style.display = 'block';
-    }
-
-    function updateSubCategory() {
-        var mainCategory = document.getElementById('mainCategory').value;
-        var subCategory = document.getElementById('subCategory');
-        subCategory.innerHTML = ''; // Clear previous options
-
-        if (mainCategory === 'electronics') {
-            subCategory.innerHTML = `
-                <option value="phone">Phone</option>
-                <option value="laptop">Laptop</option>
-                <option value="tablet">Tablet</option>
-            `;
-        } else if (mainCategory === 'jewelry') {
-            subCategory.innerHTML = `
-                <option value="ring">Ring</option>
-                <option value="necklace">Necklace</option>
-            `;
-        } else if (mainCategory === 'clothing') {
-            subCategory.innerHTML = `
-                <option value="shirt">Shirt</option>
-                <option value="jacket">Jacket</option>
-            `;
+        if (response.ok) {
+            alert('Entry submitted successfully!');
+            document.getElementById('lostItemForm').reset();
+            showHome(); // Refresh the home view to show the latest entries
+        } else {
+            alert('There was an error saving your entry. Please try again.');
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
     }
+}
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        document.getElementById('sidebar').classList.toggle('dark-mode');
-        var header = document.getElementById('header');
-        header.classList.toggle('dark-mode');
-        var buttons = document.getElementsByClassName('button');
-        for (var i = 0; i < buttons.length; i++) {
-            buttons[i].classList.toggle('dark-mode');
-        }
-        var inputs = document.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].classList.toggle('dark-mode');
-        }
-        var thElements = document.getElementsByTagName('th');
-        for (var i = 0; i < thElements.length; i++) {
-            thElements[i].classList.toggle('dark-mode');
-        }
-        var tdElements = document.getElementsByTagName('td');
-        for (var i = 0; i < tdElements.length; i++) {
-            tdElements[i].classList.toggle('dark-mode');
-        }
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    document.querySelectorAll('.button').forEach(button => {
+        button.classList.toggle('dark-mode');
+    });
+    document.querySelectorAll('input[type="text"], input[type="submit"], input[type="file"], textarea').forEach(input => {
+        input.classList.toggle('dark-mode');
+    });
+    document.querySelectorAll('th, td').forEach(cell => {
+        cell.classList.toggle('dark-mode');
+    });
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    
+    sidebar.classList.toggle('hidden'); // Toggle sidebar visibility
+    content.classList.toggle('shifted'); // Shift content margin accordingly
+}
+
+function showHome() {
+    hideAllContents();
+    document.getElementById('homeContent').style.display = 'block';
+}
+
+function showForm() {
+    hideAllContents();
+    document.getElementById('formContainer').style.display = 'block';
+}
+
+function showFind() {
+    hideAllContents();
+    document.getElementById('findContent').style.display = 'block';
+}
+
+function showForum() {
+    hideAllContents();
+    document.getElementById('forumContent').style.display = 'block';
+}
+
+function hideAllContents() {
+    document.querySelectorAll('.home-content, .form-container, .find-content, .forum-content').forEach(content => {
+        content.style.display = 'none';
+    });
+}
+
+// Call this to show the home content by default when the page loads
+window.onload = showHome;
+
+function updateSubCategory() {
+    const mainCategory = document.getElementById('mainCategory').value;
+    const subCategory = document.getElementById('subCategory');
+
+    // Clear existing options
+    subCategory.innerHTML = '';
+
+    if (mainCategory === 'electronics') {
+        subCategory.innerHTML = `
+            <option value="phone">Phone</option>
+            <option value="laptop">Laptop</option>
+        `;
+    } else if (mainCategory === 'jewelry') {
+        subCategory.innerHTML = `
+            <option value="necklace">Necklace</option>
+            <option value="ring">Ring</option>
+        `;
+    } else if (mainCategory === 'clothing') {
+        subCategory.innerHTML = `
+            <option value="shirt">Shirt</option>
+            <option value="pants">Pants</option>
+            <option value="jacket">Jacket</option>
+        
+        `;
+    } else if (mainCategory === 'school supplies') {
+        subCategory.innerHTML = `
+            <option value="ballpen">Ballpen</option>
+            <option value="correction tape">Correction Tape</option>
+            <option value="calculator">Calculator</option>
+        `;
     }
+}
+
+function showMore() {
+    const moreItems = `
+        <tr>
+            <td>Red Umbrella</td>
+            <td>Sarah Connor</td>
+            <td>2024-10-30 4:20 PM</td>
+        </tr>
+        <tr>
+            <td>Sports Shoes</td>
+            <td>Chris Evans</td>
+            <td>2024-10-31 9:10 AM</td>
+        </tr>
+    `;
+    document.querySelector('#recentItemsTable tbody').innerHTML += moreItems;
+}
 </script>
-
 
 </body>
 </html>
