@@ -72,16 +72,18 @@
         .button {
             background-color: white;
             color: #014421;
-            border: none;
+            border: 2px solid #ccc; /* Added border */
             padding: 15px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px; /* More rounded corners for smooth style */
             display: flex;
             align-items: center;
             gap: 10px; /* Space between icon and text */
             transition: background-color 0.3s, transform 0.2s;
             font-size: 18px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Added box shadow for smooth style */
         }
+        
         .button:hover {
             background-color: #f9f9f9;
             transform: scale(1.02);
@@ -288,16 +290,37 @@
     
     <div class="find-content" id="findContent">
         <h2>Find Lost Items</h2>
-        <p>Search for items that have been reported lost.</p>
-        <!-- Add search functionality here -->
+        <input type="text" id="searchInput" placeholder="Search for items..." oninput="filterItems()">
+        <table id="searchResultsTable">
+            <thead>
+                <tr>
+                    <th>Item Lost</th>
+                    <th>Reported By</th>
+                    <th>Time Logged</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Search results will be populated here -->
+            </tbody>
+        </table>
     </div>
 
     <div class="forum-content" id="forumContent">
         <h2>Forum</h2>
-        <p>Discuss and share about lost and found items.</p>
-        <!-- Add forum functionality here -->
+        <div id="forumPosts">
+            <!-- Forum posts will be populated here -->
+        </div>
+        <form id="forumPostForm" onsubmit="submitForumPost(event)">
+            <fieldset>
+                <legend>New Post</legend>
+                <label for="postTitle">Title:</label>
+                <input type="text" id="postTitle" name="postTitle" required>
+                <label for="postContent">Content:</label>
+                <textarea id="postContent" name="postContent" required></textarea>
+                <input type="submit" value="Post">
+            </fieldset>
+        </form>
     </div>
-</div>
 
 <script>
 async function submitForm(event) {
@@ -421,5 +444,74 @@ function showMore() {
 }
 </script>
 
+
+
+
+<div class="forum-content" id="forumContent">
+    <h2>Forum</h2>
+    <div id="forumPosts">
+        <!-- Forum posts will be populated here -->
+    </div>
+    <form id="forumPostForm" onsubmit="submitForumPost(event)">
+        <fieldset>
+            <legend>New Post</legend>
+            <label for="postTitle">Title:</label>
+            <input type="text" id="postTitle" name="postTitle" required>
+            <label for="postContent">Content:</label>
+            <textarea id="postContent" name="postContent" required></textarea>
+            <input type="submit" value="Post">
+        </fieldset>
+    </form>
+</div>
+
+<script>
+const items = [
+    { name: 'Blue Backpack', reporter: 'John Doe', time: '2024-10-29 12:00 PM' },
+    { name: 'Smartphone', reporter: 'Jane Smith', time: '2024-10-30 1:30 PM' },
+    { name: 'Black Wallet', reporter: 'Michael Johnson', time: '2024-10-28 11:45 AM' },
+    { name: 'Red Umbrella', reporter: 'Sarah Connor', time: '2024-10-30 4:20 PM' },
+    { name: 'Sports Shoes', reporter: 'Chris Evans', time: '2024-10-31 9:10 AM' }
+];
+
+function filterItems() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchInput));
+    const searchResultsTable = document.getElementById('searchResultsTable').getElementsByTagName('tbody')[0];
+    searchResultsTable.innerHTML = '';
+    filteredItems.forEach(item => {
+        const row = searchResultsTable.insertRow();
+        row.insertCell(0).textContent = item.name;
+        row.insertCell(1).textContent = item.reporter;
+        row.insertCell(2).textContent = item.time;
+    });
+}
+
+const forumPosts = [];
+
+function submitForumPost(event) {
+    event.preventDefault();
+    const postTitle = document.getElementById('postTitle').value;
+    const postContent = document.getElementById('postContent').value;
+    const newPost = { title: postTitle, content: postContent, time: new Date().toLocaleString() };
+    forumPosts.push(newPost);
+    displayForumPosts();
+    document.getElementById('forumPostForm').reset();
+}
+
+function displayForumPosts() {
+    const forumPostsDiv = document.getElementById('forumPosts');
+    forumPostsDiv.innerHTML = '';
+    forumPosts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('forum-post');
+        postDiv.innerHTML = `
+            <h3>${post.title}</h3>
+            <p>${post.content}</p>
+            <small>Posted on: ${post.time}</small>
+        `;
+        forumPostsDiv.appendChild(postDiv);
+    });
+}
+</script>
 </body>
 </html>
